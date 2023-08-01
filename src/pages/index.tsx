@@ -1,11 +1,18 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { set } from "zod";
 
+import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
+import AudioPlayer from "~/components/audio-player";
 export default function Home() {
   const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
   const [alarm, setAlarm] = useState({ h: 0, m: 0 });
+  const [isOn, setIsOn] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    setAudio(new Audio("https://kukuklok.com/audio/alien.mp3"));
+  }, []);
   const currentTime = () => {
     const currTime = new Date();
     setTime({
@@ -16,6 +23,18 @@ export default function Home() {
   };
   setInterval(currentTime, 1000);
 
+  const startAlarm = (audio: HTMLAudioElement) => {
+    if (isOn) {
+      setIsOn(false);
+      audio.pause();
+      audio.currentTime = 0;
+      return;
+    }
+    setIsOn(true);
+    audio.loop = true;
+    audio.volume = 1;
+    audio.play().catch((err) => console.log(err));
+  };
   return (
     <>
       <Head>
@@ -48,12 +67,133 @@ export default function Home() {
           </div>
         </div>
         {/* ----- SA3A ----- */}
-        <div>
+        <div className="flex w-full justify-around">
+          <div className="space-y-5">
+            {/* hours selector */}
+            <div>
+              <div className="flex justify-center">
+                <p>Set hour</p>
+              </div>
+              <div className="join grid w-fit grid-cols-3">
+                <button
+                  onClick={() => {
+                    if (alarm.h === 0) {
+                      setAlarm({ ...alarm, h: 23 });
+                      return;
+                    }
+                    setAlarm({ ...alarm, h: alarm.h - 1 });
+                  }}
+                  className="btn btn-outline join-item"
+                >
+                  <AiOutlineMinus />
+                </button>
+                <input
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (alarm.h === 23 && value === 24) {
+                      setAlarm({ ...alarm, h: 0 });
+                      return;
+                    } else if (alarm.h === 0 && value === -1) {
+                      setAlarm({ ...alarm, h: 23 });
+                      return;
+                    } else {
+                      setAlarm({ ...alarm, h: parseInt(e.target.value) });
+                    }
+                  }}
+                  max={24}
+                  min={-1}
+                  value={alarm.h}
+                  type="number"
+                  className="input input-ghost text-center text-xl font-bold focus:!bg-transparent active:!bg-transparent"
+                />
+                <button
+                  onClick={() => {
+                    if (alarm.h === 23) {
+                      setAlarm({ ...alarm, h: 0 });
+                      return;
+                    }
+                    setAlarm({ ...alarm, h: alarm.h + 1 });
+                  }}
+                  className="btn btn-outline join-item"
+                >
+                  <AiOutlinePlus />
+                </button>
+              </div>
+            </div>
+            {/* hours selector */}
+
+            {/* minutes selector */}
+            <div>
+              <div className="flex justify-center">
+                <p>Set minutes</p>
+              </div>
+              <div className="join grid w-fit grid-cols-3">
+                <button
+                  onClick={() => {
+                    if (alarm.m === 0) {
+                      setAlarm({ ...alarm, m: 59 });
+                      return;
+                    }
+                    setAlarm({ ...alarm, m: alarm.m - 1 });
+                  }}
+                  className="btn btn-outline join-item"
+                >
+                  <AiOutlineMinus />
+                </button>
+                <input
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (alarm.m === 59 && value === 60) {
+                      setAlarm({ ...alarm, m: 0 });
+                      return;
+                    } else if (alarm.m === 0 && value === -1) {
+                      setAlarm({ ...alarm, m: 59 });
+                      return;
+                    } else {
+                      setAlarm({ ...alarm, m: parseInt(e.target.value) });
+                    }
+                  }}
+                  max={60}
+                  min={-1}
+                  value={alarm.m}
+                  type="number"
+                  className="input input-ghost text-center text-xl font-bold focus:!bg-transparent active:!bg-transparent"
+                />
+                <button
+                  onClick={() => {
+                    if (alarm.m === 59) {
+                      setAlarm({ ...alarm, m: 0 });
+                      return;
+                    }
+                    setAlarm({ ...alarm, m: alarm.m + 1 });
+                  }}
+                  className="btn btn-outline join-item"
+                >
+                  <AiOutlinePlus />
+                </button>
+              </div>
+            </div>
+            {/* minutes selector */}
+            {/* set button */}
+            <div>
+              <button
+                onClick={() => {
+                  if (audio) {
+                    startAlarm(audio);
+                  }
+                }}
+                className={`${
+                  isOn ? "btn-error" : "btn-success"
+                } btn join-item w-full`}
+              >
+                {isOn ? "Stop" : "Start"}
+              </button>
+            </div>
+            {/* set button */}
+          </div>
           <div>
-            <div className="join join-vertical lg:join-horizontal">
-              <button className="btn join-item">Button</button>
-              <button className="btn join-item">Button</button>
-              <button className="btn join-item">Button</button>
+            <div className="flex h-full items-center justify-center text-5xl">
+              Sleep Well
             </div>
           </div>
         </div>
