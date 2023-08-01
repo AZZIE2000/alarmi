@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import { set } from "zod";
 
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import AudioPlayer from "~/components/audio-player";
+
 export default function Home() {
   const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
   const [alarm, setAlarm] = useState({ h: 0, m: 0 });
   const [isOn, setIsOn] = useState(false);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [check, setCheck] = useState(false);
+  const [running, setRunning] = useState(false);
   useEffect(() => {
-    setAudio(new Audio("https://kukuklok.com/audio/alien.mp3"));
+    setAudio(new Audio("/1.mp3"));
   }, []);
   const currentTime = () => {
     const currTime = new Date();
@@ -23,18 +25,21 @@ export default function Home() {
   };
   setInterval(currentTime, 1000);
 
-  const startAlarm = (audio: HTMLAudioElement) => {
-    if (isOn) {
-      setIsOn(false);
-      audio.pause();
-      audio.currentTime = 0;
-      return;
+  const startAlarm = () => {
+    if (running) return;
+    if (isOn && audio && time.h == alarm.h && time.m == alarm.m) {
+      audio.loop = true;
+      audio.volume = 1;
+      audio.play().catch((err) => console.log(err));
+      setRunning(true);
     }
-    setIsOn(true);
-    audio.loop = true;
-    audio.volume = 1;
-    audio.play().catch((err) => console.log(err));
   };
+  setInterval(() => {
+    setCheck(!check);
+  }, 1000);
+  useEffect(() => {
+    startAlarm();
+  }, [check]);
   return (
     <>
       <Head>
@@ -66,6 +71,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+
         {/* ----- SA3A ----- */}
         <div className="flex w-full justify-around">
           <div className="space-y-5">
@@ -178,9 +184,7 @@ export default function Home() {
             <div>
               <button
                 onClick={() => {
-                  if (audio) {
-                    startAlarm(audio);
-                  }
+                  setIsOn(!isOn);
                 }}
                 className={`${
                   isOn ? "btn-error" : "btn-success"
