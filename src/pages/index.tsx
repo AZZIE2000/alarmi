@@ -53,19 +53,19 @@ export default function Home() {
           <div className="grid auto-cols-max grid-flow-col gap-5 text-center">
             <div className="rounded-box flex flex-col bg-white/10 p-2 text-neutral-content backdrop-blur-lg">
               <span className="countdown font-mono text-5xl">
-                <span style={{ "--value": time.h }}></span>
+                <span>{time.h}</span>
               </span>
               hours
             </div>
             <div className="rounded-box flex flex-col bg-white/10 p-2 text-neutral-content backdrop-blur-lg">
               <span className="countdown font-mono text-5xl">
-                <span style={{ "--value": time.m }}></span>
+                <span>{time.m}</span>
               </span>
               min
             </div>
             <div className="rounded-box flex flex-col bg-white/10 p-2 text-neutral-content backdrop-blur-lg">
               <span className="countdown font-mono text-5xl">
-                <span style={{ "--value": time.s }}></span>
+                <span>{time.s}</span>
               </span>
               sec
             </div>
